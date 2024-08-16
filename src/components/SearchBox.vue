@@ -1,6 +1,7 @@
 <template>
 
 
+<form @submit.prevent="searchFlights">
 <div class="row">
 
     <div class="col-md-3">
@@ -9,7 +10,7 @@
 
             <label>Selecciona un destino</label>
 
-            <input type="text" class="form-control" v-model="destination" @input="onDestinationChange"/>
+            <input type="text" placeholder="Escribe para buscar" class="form-control" required v-model="destination" @input="onDestinationChange"/>
 
             <div class="suggestions" v-if="destinations">
 
@@ -28,19 +29,7 @@
         <div class="form-group">
 
             <label>Pasajeros</label>
-
-
             <input type="text" :type="'number'" v-model="passengers" class="form-control"/>
-            <!--
-            <select class="form-control" v-model="airline">
-                
-                <option v-for="(airline,index) in airlines" :key="index">
-                    {{airline.name}}</option>
-                    
-                    
-                </select>
-                
-            -->
         </div>
     </div>
 
@@ -69,6 +58,8 @@
 
 </div>
 
+</form>
+
 
 
 </template>
@@ -87,6 +78,7 @@
             DatePicker
             
         },
+        emits:['results','searching','seats'],
         data(){
 
             return {
@@ -105,6 +97,32 @@
         },
 
         methods:{
+
+
+            searchFlights(){
+
+
+                this.$emit('searching',true);
+
+
+                const data={departure_time:this.departure_time,
+                            destination_id:this.destination_id,
+                            passengers:this.passengers
+
+                }
+                
+                this.$api.post('/site/searchflights',data).then(r=>{
+                    
+                    
+                    
+                    this.$emit('searching',false);
+                    this.$emit('results',r);
+
+
+                });
+
+
+            },
 
             onDestinationChange(e){
 
@@ -138,6 +156,10 @@
                 this.destination=name;
                 this.destinations=[];
 
+                
+                this.searchFlights();
+                
+
 
             }
 
@@ -145,12 +167,27 @@
         
         mounted(){
 
+
+            this.$emit('seats',this.passengers);
             this.$api.get('/site/catalogs').then(r=>{
 
                 
                 this.airlines=r.data.airlines;
 
             });
+
+        },
+
+        watch:{
+
+            'passengers':{
+                handler:function(val){
+
+                    this.$emit('seats',val);
+                }
+
+            }
+
 
         }
 
@@ -160,3 +197,11 @@
 
 
 </script>
+
+<style scoped>
+
+.suggestions{background:#fff;}
+.suggestions .destination{padding:3px;}
+.suggestions .destination a{color:#000;text-decoration: none;padding:3px;display:block}
+
+</style>

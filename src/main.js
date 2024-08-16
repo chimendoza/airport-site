@@ -10,7 +10,8 @@ import '@vuepic/vue-datepicker/dist/main.css';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import {nl2br,inputType,maxChar} from "@/util/directives";
+import {nl2br,inputType,maxChar,date,number} from "@/util/directives";
+
 
 import axios from 'axios'
 
@@ -33,6 +34,8 @@ const api = axios.create({
 const app = createApp(App)
 
 app.config.globalProperties.$api = api;
+app.config.globalProperties.$date = date;
+app.config.globalProperties.$number = number;
 app.config.globalProperties.$apiUrl = 'http://localhost:8006/api/v1';
 
 
