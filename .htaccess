@@ -1,0 +1,11 @@
+# Habilitar la reescritura de URL
+RewriteEngine On
+
+# Redirigir todo el tráfico HTTP a HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirigir todas las solicitudes a index.html (excepto las que son archivos reales o directorios)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.html [L]
